@@ -115,8 +115,6 @@ body {
     from { opacity: 0; transform: translateY(40px); }
     to { opacity: 1; transform: translateY(0); }
 }
-
-/* ===== BANNER HERO ===== */
 .form-banner {
     background: linear-gradient(135deg, #16410C, #16410C, #fcf75e);
     padding: 55px 20px;

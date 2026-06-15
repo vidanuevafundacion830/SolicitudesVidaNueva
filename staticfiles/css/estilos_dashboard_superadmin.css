@@ -22,17 +22,16 @@
 body {
     display: flex;
     min-height: 100vh;
-    background: #f4f6f9; /* Fondo claro igual al ejemplo dashboard.html */
+    background: #f4f6f9;
     position: relative;
     overflow-x: hidden;
+    animation: fadePage .4s ease;
 }
-
-/* Se eliminaron las luces radiales para mantener el fondo limpio como en el ejemplo */
 
 .sidebar {
     width: 260px;
     height: 100vh;
-    background: linear-gradient(180deg, #0d2b08, #16410C, #245818);
+    background: linear-gradient(180deg, #000000, #0d2b08, #16410C, #245818);
     color: white;
     padding: 30px 20px;
     position: fixed;
@@ -51,6 +50,7 @@ body {
     letter-spacing: 0.5px;
     margin-bottom: 24px;
     color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .sidebar ul {
@@ -77,15 +77,16 @@ body {
 
 .sidebar ul li a:hover,
 .sidebar ul li a.active {
-    background: rgba(252, 247, 94, 0.18);
+    background: rgba(255, 255, 255, 0.15);
     color: #fcf75e;
     transform: translateX(8px);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
 .sidebar-footer {
     margin-top: auto;
     padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .sidebar-user {
@@ -94,7 +95,7 @@ body {
     gap: 10px;
     padding: 14px 16px;
     border-radius: 14px;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.2);
     margin-bottom: 16px;
 }
 
@@ -109,56 +110,18 @@ body {
     color: #16410C;
     font-size: 16px;
     font-weight: 700;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .sidebar-user-name {
     color: white;
     font-size: 0.95rem;
     font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .sidebar-user-role {
-    color: rgba(255, 255, 255, 0.65);
-    font-size: 0.8rem;
-}
-
-.sidebar-footer {
-    margin-top: auto;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.sidebar-user {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 14px 16px;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.08);
-    margin-bottom: 16px;
-}
-
-.sidebar-user-avatar {
-    width: 38px;
-    height: 38px;
-    background: #fcf75e;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #16410C;
-    font-size: 16px;
-    font-weight: 700;
-}
-
-.sidebar-user-name {
-    color: white;
-    font-size: 0.95rem;
-    font-weight: 600;
-}
-
-.sidebar-user-role {
-    color: rgba(255, 255, 255, 0.65);
+    color: rgba(255, 255, 255, 0.75);
     font-size: 0.8rem;
 }
 
@@ -565,7 +528,6 @@ tr:hover td {
 .btn-modal-action { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
 .btn-modal-action:hover { background: #991b1b; color: white; transform: translateY(-2px); }
 
-
 .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
 .toast-card { background: linear-gradient(90deg, #16410C, #245818); color: white; padding: 15px 25px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); min-width: 300px; max-width: 450px; transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease; opacity: 0; }
 .toast-card.show { transform: translateX(0); opacity: 1; }
@@ -717,4 +679,26 @@ tr:hover td {
     .toast-container { width: calc(100% - 40px); top: 15px; right: 20px; }
     .toast-card { min-width: 100%; }
     .btn-editar, .btn-eliminar { padding: 6px 12px; font-size: 0.8rem; }
+}
+
+.dashboard-container,
+.container,
+.main-content {
+    animation: slideIn .6s ease;
+}
+
+@keyframes fadePage {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
