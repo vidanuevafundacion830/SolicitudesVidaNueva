@@ -26,7 +26,11 @@ SECRET_KEY = 'django-insecure-+i9ta-c_3%vzr_l=1)b9pg^74e6%mx1d!7!n(@rd@85_5wt-0a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
+ALLOWED_HOSTS = [
+    'web-production-f86ae39.up.railway.app',
+    'localhost',
+    '127.0.0.1',
+]
 
 
 # Application definition
@@ -50,6 +54,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'solicitudes.middleware.ErrorMiddleware',
+]
+# settings.py
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://web-production-f86ae39.up.railway.app', 
+    # Si vas a usar un dominio propio después, agrégalo también aquí
 ]
 
 ROOT_URLCONF = 'solicitudes_vn.urls'
