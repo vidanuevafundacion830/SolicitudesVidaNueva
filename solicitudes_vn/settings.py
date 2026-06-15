@@ -27,13 +27,11 @@ SECRET_KEY = 'django-insecure-+i9ta-c_3%vzr_l=1)b9pg^74e6%mx1d!7!n(@rd@85_5wt-0a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = [
-    'web-production-f86ae39.up.railway.app',
-    'localhost',
-    '127.0.0.1',
-]
+# Permite tu dominio y el localhost para pruebas
+ALLOWED_HOSTS = ['web-production-f86ae39.up.railway.app', 'localhost', '127.0.0.1']
 
-
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 # Application definition
 
 INSTALLED_APPS = [
@@ -48,6 +46,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -129,7 +128,8 @@ STATICFILES_DIRS = [
     BASE_DIR / 'solicitudes' / 'static',
 ]
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Email configuration
 # Uses Flask-style MAIL_* environment variables when available.
