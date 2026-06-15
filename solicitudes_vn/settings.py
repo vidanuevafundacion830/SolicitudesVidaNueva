@@ -61,7 +61,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://solicitudesvidanueva.up.railway.app',
 ]
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'solicitudes', 'static', 'uploads')
+MEDIA_ROOT = BASE_DIR / 'media'
 ROOT_URLCONF = 'solicitudes_vn.urls'
 
 TEMPLATES = [
