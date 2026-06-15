@@ -111,7 +111,7 @@ Información General
 <label>Documento Adjunto (Anexo)</label>
 {% if solicitud.10 %}
     <p style="margin-top: 5px;">
-        <a href="{% static 'uploads/' %}{{ solicitud.10 }}" target="_blank" style="color: #ffc067; font-weight: 600; text-decoration: underline;">
+        <a href="/media/{{ anexo.nombre }}{{ solicitud.10 }}" target="_blank" style="color: #ffc067; font-weight: 600; text-decoration: underline;">
             📄 Ver archivo adjunto original
         </a>
     </p>

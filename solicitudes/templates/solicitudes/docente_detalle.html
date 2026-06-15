@@ -97,7 +97,7 @@
         <div class="field full-width" style="margin-top: 25px;">
             <label>Anexos</label>
             {% if solicitud.10 %}
-                <a class="btn-link" href="{% static 'uploads/' %}{{ solicitud.10 }}" target="_blank">
+                <a class="btn-link" href="/media/{{ anexo.nombre }}{{ solicitud.10 }}" target="_blank">
                     Descargar / Ver anexo y documentos adjuntos
                 </a>
             {% else %}
