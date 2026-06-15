@@ -127,13 +127,10 @@ def guardar(request):
     anexo_nombre = None
 
     if anexo_file:
-        uploads_dir = os.path.join(
-            settings.BASE_DIR,
-            'solicitudes',
-            'static',
-            'uploads'
-        )
+        # CAMBIO AQUÍ: Ahora apuntamos directamente a settings.MEDIA_ROOT
+        uploads_dir = settings.MEDIA_ROOT
 
+        # Creamos la carpeta de media si no existe en el contenedor
         os.makedirs(uploads_dir, exist_ok=True)
 
         import uuid
@@ -143,6 +140,7 @@ def guardar(request):
 
         archivo_path = os.path.join(uploads_dir, anexo_nombre)
 
+        # Guarda el archivo físicamente en la nueva carpeta persistente
         with open(archivo_path, 'wb+') as destination:
             for chunk in anexo_file.chunks():
                 destination.write(chunk)
