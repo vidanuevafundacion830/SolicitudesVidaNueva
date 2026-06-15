@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-+i9ta-c_3%vzr_l=1)b9pg^74e6%mx1d!7!n(@rd@85_5wt-0a
 DEBUG = False
 
 # Permite tu dominio y el localhost para pruebas
-ALLOWED_HOSTS = ['web-production-f86ae39.up.railway.app', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['solicitudesvidanueva.up.railway.app', 'localhost', '127.0.0.1']
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
@@ -58,8 +58,7 @@ MIDDLEWARE = [
 # settings.py
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://web-production-f86ae39.up.railway.app', 
-    # Si vas a usar un dominio propio después, agrégalo también aquí
+    'https://solicitudesvidanueva.up.railway.app',
 ]
 
 ROOT_URLCONF = 'solicitudes_vn.urls'
