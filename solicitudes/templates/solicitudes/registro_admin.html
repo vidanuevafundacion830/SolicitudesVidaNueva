@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <title>Registro Administrador - UE "Vida Nueva"</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="{% static 'js/scripts.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/estilos_index.css' %}">
+</head>
+<body>
+
+<div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<header class="main-header">
+    <div class="header-container">
+        <div class="logo-title-area">
+            <img src="{% static 'img/logo_tecnica.jpeg' %}" alt="Logo Vida Nueva" class="school-logo">
+            <h1>Unidad Educativa Particular Técnica Cristiana "Vida Nueva"</h1>
+        </div>
+        <a href="{% url 'dashboard_superadmin' %}" class="btn-login-header">Volver al inicio</a>
+    </div>
+</header>
+
+<div class="container">
+    <h2 class="form-title">Registrar Usuario</h2>
+    <p class="subtitle">Complete los campos para dar de alta al nuevo personal de la institución.</p>
+
+    <form method="POST" id="requestForm">
+        {% csrf_token %}
+        <div class="form-section-title"><span>01</span> Datos Personales</div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Nombre completo:</label>
+                <input
+    type="text"
+    name="nombre"
+    oninput="this.value=this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ ]/g,''); updateProgress();"
+    placeholder="Ej: Juan Carlos"
+    required>
+            </div>
+            
+            <div class="form-group">
+                <label>Apellidos:</label>
+                <input
+    type="text"
+    name="apellido"
+    oninput="this.value=this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ ]/g,''); updateProgress();"
+    placeholder="Ej: Pérez Armas"
+    required>
+            </div>
+            
+            <div class="form-group">
+                <label>Número de Cédula:</label>
+              <input
+    type="text"
+    name="cedula"
+    maxlength="10"
+    oninput="this.value=this.value.replace(/[^0-9]/g,''); updateProgress();"
+    placeholder="Ej: 1712345678"
+    required>
+            </div>
+            
+            <div class="form-group">
+                <label>Teléfono de contacto:</label>
+                <input
+    type="text"
+    name="telefono"
+    maxlength="10"
+    oninput="this.value=this.value.replace(/[^0-9]/g,''); updateProgress();"
+    placeholder="Ej: 09..."
+    required>
+            </div>
+        </div>
+
+        <div class="form-section-title"><span>02</span> Credenciales de Cuenta</div>
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label>Correo electrónico:</label>
+                <input type="email" name="correo" oninput="updateProgress()" placeholder="ejemplo@vidanueva.edu.ec" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Nombre de usuario:</label>
+                <input type="text" name="usuario" oninput="updateProgress()" placeholder="Ej: jperez" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Contraseña segura:</label>
+                <input type="password" name="contraseña" oninput="updateProgress()" placeholder="••••••••" required>
+            </div>
+            
+      <div class="form-group full-width">
+    <label>Rol del usuario institucional:</label>
+    <select name="rol" class="select-custom" onchange="updateProgress()" required>
+        <option value="" disabled selected>Seleccione el rol del usuario</option>
+
+        <optgroup label="── Administración ──">
+            <option value="superadmin">👑 Superadministrador</option>
+            <option value="secretaria">📋 Secretaria</option>
+        </optgroup>
+
+        <optgroup label="── Académico ──">
+            <option value="docente">👨‍🏫 Docente</option>
+        </optgroup>
+    </select>
+</div>
+        </div>
+
+        <button type="submit" class="btn-submit" style="margin-top: 35px;">
+            <span>Registrar Usuario</span>
+        </button>
+    </form>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="{% if 'error' in message.tags %}popup-error{% else %}popup-success{% endif %}" id="popup">
+            <p>{{ message }}</p>
+        </div>
+    {% endfor %}
+{% endif %}
+
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Docente - Solicitudes Asignadas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/estilos_dashboard_docente.css' %}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo" style="display: flex; align-items: center; gap: 15px;">
+        <img src="{% static 'img/logo_tecnica.jpeg' %}" alt="Logo Vida Nueva" class="school-logo" style="width: 45px; height: 45px; border-radius: 8px; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+        <h1 style="margin: 0; font-family: inherit; font-size: 1.1rem; font-weight: 700; color: #ffffff; line-height: 1.3;">Unidad Educativa Particular Técnica Cristiana "Vida Nueva"</h1>
+    </div>
+    <div style="display: flex; align-items: center;">
+        <div class="usuario">
+            👨‍🏫 {{ nombre_completo }}
+        </div>
+        <a href="javascript:void(0);" onclick="abrirModalLogout()" class="logout">
+            Cerrar Sesión
+        </a>
+    </div>
+</nav>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="{% if 'error' in message.tags %}popup-error{% else %}popup-success{% endif %}" id="popup">
+            <p>{{ message }}</p>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div id="modalLogout" class="modal-overlay">
+    <div class="modal-box">
+        <span class="modal-icon">🚪</span>
+        <h3>¿Deseas cerrar sesión?</h3>
+        <p>¿Seguro que quieres salir? Tendrás que introducir tus credenciales de nuevo para acceder al panel.</p>
+        <div class="modal-buttons">
+            <button class="btn-modal btn-modal-cancel" onclick="cerrarModales()">Volver</button>
+            <button class="btn-modal btn-modal-action" onclick="ejecutarLogout()">Cerrar Sesión</button>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="welcome">
+        <h1>Solicitudes Asignadas</h1>
+        <p>Gestiona las solicitudes asignadas, registra respuestas institucionales y realiza seguimiento de cada caso.</p>
+    </div>
+
+    <div class="stats">
+        <div class="card">
+            <h3>En Proceso</h3>
+            <span>{{ proceso }}</span>
+        </div>
+
+        <div class="card">
+            <h3>Resueltas</h3>
+            <span>{{ resueltas }}</span>
+        </div>
+
+        <div class="card">
+            <h3>Total Asignadas</h3>
+            <span>{{ total_asignadas }}</span>
+        </div>
+    </div>
+
+    <div class="tabla-box">
+        <h2>📄 Solicitudes Activas</h2>
+        <div class="search-bar">
+            <div class="search-field">
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Buscar por código, estudiante, solicitante, curso, paralelo, fecha o estado..."
+                    onkeyup="filtrarSolicitudes()">
+                <span id="clearSearch" class="clear-icon" style="display:none;" onclick="limpiarBusqueda()">×</span>
+            </div>
+        </div>
+        
+        <div class="tabla-responsiva">
+            <table id="tablaPendientes">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Estudiante</th>
+                        <th>Solicitante</th>
+                        <th>Curso</th>
+                        <th>Paralelo</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for solicitud in solicitudes_activas %}
+                    <tr>
+                        <td data-label="Código">{{ solicitud.1 }}</td>
+                        <td data-label="Estudiante">{{ solicitud.2 }}</td>
+                        <td data-label="Solicitante">{{ solicitud.3 }}</td>
+                        <td data-label="Curso">{{ solicitud.4 }}</td>
+                        <td data-label="Paralelo">{{ solicitud.5 }}</td>
+                        <td data-label="Fecha">{{ solicitud.6 }}</td>
+                        <td data-label="Estado">
+                            <span class="estado pendiente">
+                                {{ solicitud.7 }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="/docente/solicitud/{{ solicitud.0 }}" class="btn-ver">
+                                Abrir
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr class="fila-vacia-original">
+                        <td colspan="8" style="color: var(--texto-secundario); text-align:center; padding:20px;">
+                            No hay solicitudes activas para mostrar.
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                    <tr id="sinResultados" style="display:none;">
+                        <td colspan="8" style="text-align:center; padding:20px; color: var(--texto-secundario); font-style: italic;">
+                            No hay Solicitudes Que coincidan con su búsqueda
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="tabla-box">
+        <h2>✅ Solicitudes Finalizadas</h2>
+        <div class="search-bar">
+            <div class="search-field">
+                <input
+                    type="text"
+                    id="searchFinalizadas"
+                    placeholder="Buscar por código, estudiante, solicitante, curso, paralelo, fecha o estado..."
+                    onkeyup="filtrarFinalizadas()">
+                <span id="clearFinalizadas" class="clear-icon" style="display:none;" onclick="limpiarBusquedaFinalizadas()">×</span>
+            </div>
+        </div>
+        
+        <div class="tabla-responsiva">
+            <table id="tablaFinalizadas">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Estudiante</th>
+                        <th>Solicitante</th> <th>Curso</th>
+                        <th>Paralelo</th>
+                        <th>Estado</th>
+                        <th>Fecha Resolución</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for solicitud in solicitudes_finalizadas %}
+                    <tr>
+                        <td data-label="Código">{{ solicitud.0 }}</td>
+                        <td data-label="Estudiante">{{ solicitud.1 }}</td>
+                        <td data-label="Solicitante">{{ solicitud.2 }}</td> <td data-label="Curso">{{ solicitud.3 }}</td>
+                        <td data-label="Paralelo">{{ solicitud.4 }}</td>
+                        <td data-label="Estado">{{ solicitud.5 }}</td>
+                        <td data-label="Fecha Resolución">{{ solicitud.6 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr class="fila-vacia-original">
+                        <td colspan="7" style="color: var(--texto-secundario); text-align: center; padding: 20px;">
+                            No hay solicitudes finalizadas asignadas.
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                    <tr id="sinResultadosFinalizadas" style="display:none;">
+                        <td colspan="7" style="text-align:center; padding:20px; color: var(--texto-secundario); font-style: italic;">
+                            No hay Solicitudes Que coincidan con su búsqueda
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const popup = document.getElementById('popup');
+        if (popup) {
+            setTimeout(() => {
+                popup.style.opacity = '0';
+                popup.style.transform = 'translateX(100px) scale(0.9)';
+                setTimeout(() => popup.remove(), 400);
+            }, 4000);
+        }
+    });
+
+    function abrirModalLogout() {
+        document.getElementById('modalLogout').classList.add('active');
+    }
+
+    function cerrarModales() {
+        document.getElementById('modalLogout').classList.remove('active');
+    }
+
+    function ejecutarLogout() {
+        window.location.href = "{% url 'logout' %}"; 
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('modalLogout');
+        if (event.target === modal) {
+            modal.classList.remove('active');
+        }
+    }
+
+    function filtrarSolicitudes() {
+        const filtro = document.getElementById('searchInput').value.toLowerCase();
+        const filas = document.querySelectorAll('#tablaPendientes tbody tr:not(#sinResultados):not(.fila-vacia-original)');
+        let encontrados = 0;
+        const clearButton = document.getElementById('clearSearch');
+
+        filas.forEach(fila => {
+            const codigo = fila.querySelector('td[data-label="Código"]')?.textContent.toLowerCase() || '';
+            const estudiante = fila.querySelector('td[data-label="Estudiante"]')?.textContent.toLowerCase() || '';
+            const solicitante = fila.querySelector('td[data-label="Solicitante"]')?.textContent.toLowerCase() || '';
+            const curso = fila.querySelector('td[data-label="Curso"]')?.textContent.toLowerCase() || '';
+            const paralelo = fila.querySelector('td[data-label="Paralelo"]')?.textContent.toLowerCase() || '';
+            const estado = fila.querySelector('td[data-label="Estado"]')?.textContent.toLowerCase() || '';
+
+            const coincide = codigo.includes(filtro) || estudiante.includes(filtro) || solicitante.includes(filtro) || curso.includes(filtro) || paralelo.includes(filtro) || estado.includes(filtro);
+
+            if (coincide) {
+                fila.style.display = '';
+                encontrados++;
+            } else {
+                fila.style.display = 'none';
+            }
+        });
+
+        const mensaje = document.getElementById('sinResultados');
+        if (mensaje) {
+            mensaje.style.display = encontrados === 0 && filtro ? '' : 'none';
+        }
+
+        if (clearButton) {
+            clearButton.style.display = filtro ? 'block' : 'none';
+        }
+    }
+    function filtrarFinalizadas() {
+        const filtro = document.getElementById('searchFinalizadas').value.toLowerCase();
+        const filas = document.querySelectorAll('#tablaFinalizadas tbody tr:not(#sinResultadosFinalizadas):not(.fila-vacia-original)');
+        let encontrados = 0;
+        const clearButton = document.getElementById('clearFinalizadas');
+
+        filas.forEach(fila => {
+            const codigo = fila.querySelector('td[data-label="Código"]')?.textContent.toLowerCase() || '';
+            const estudiante = fila.querySelector('td[data-label="Estudiante"]')?.textContent.toLowerCase() || '';
+            const solicitante = fila.querySelector('td[data-label="Solicitante"]')?.textContent.toLowerCase() || '';
+            const curso = fila.querySelector('td[data-label="Curso"]')?.textContent.toLowerCase() || '';
+            const paralelo = fila.querySelector('td[data-label="Paralelo"]')?.textContent.toLowerCase() || '';
+            const estado = fila.querySelector('td[data-label="Estado"]')?.textContent.toLowerCase() || '';
+            const fecha = fila.querySelector('td[data-label="Fecha Resolución"]')?.textContent.toLowerCase() || '';
+            const coincide = codigo.includes(filtro) || estudiante.includes(filtro) || solicitante.includes(filtro) || curso.includes(filtro) || paralelo.includes(filtro) || estado.includes(filtro) || fecha.includes(filtro);
+
+            if (coincide) {
+                fila.style.display = '';
+                encontrados++;
+            } else {
+                fila.style.display = 'none';
+            }
+        });
+
+        const mensaje = document.getElementById('sinResultadosFinalizadas');
+        if (mensaje) {
+            mensaje.style.display = encontrados === 0 && filtro ? '' : 'none';
+        }
+
+        if (clearButton) {
+            clearButton.style.display = filtro ? 'block' : 'none';
+        }
+    }
+
+    function limpiarBusqueda() {
+        document.getElementById('searchInput').value = '';
+        filtrarSolicitudes();
+    }
+
+    function limpiarBusquedaFinalizadas() {
+        document.getElementById('searchFinalizadas').value = '';
+        filtrarFinalizadas();
+    }
+</script>
+</body>
+</html>

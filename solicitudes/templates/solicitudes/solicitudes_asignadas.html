@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitudes Asignadas - Secretaría</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+       <link rel="stylesheet" href="{% static 'css/estilos_dashboard_secretaria.css' %}?v=3">
+</head>
+<body>
+
+    <nav class="navbar">
+    <div class="navbar-brand" style="display: flex; align-items: center; gap: 15px;">
+        <img src="{% static 'img/logo_tecnica.jpeg' %}" alt="Logo Vida Nueva" class="school-logo" style="width: 45px; height: 45px; border-radius: 8px; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+        <h1 style="margin: 0; font-family: inherit; font-size: 1.1rem; font-weight: 700; color: #ffffff; line-height: 1.3;">Unidad Educativa Particular Técnica Cristiana "Vida Nueva"</h1>
+    </div>
+    <div class="navbar-nav" style="display: flex; align-items: center;">
+        <a href="{% url 'dashboard_secretaria' %}">📄 Pendientes</a>
+        <a onclick="abrirModalLogout()" class="logout">🚪 Cerrar Sesión</a>
+    </div>
+</nav>
+
+    <div class="container">
+
+        <div class="welcome-box">
+            <h1>Solicitudes Asignadas</h1>
+            <p>Bienvenida/o, <strong>{{ nombre }}</strong></p>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="buscadorAsignadas" placeholder="🔍 Buscar por código, solicitante, estudiante, curso, paralelo o fecha...">
+        </div>
+
+        <div class="table-container">
+
+            <div class="table-header">
+                <h2>📌 Solicitudes Asignadas</h2>
+            </div>
+
+            <table id="tablaAsignadas">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Solicitante</th>
+                        <th>Estudiante</th>
+                        <th>Sección</th>
+                        <th>Jornada</th>
+                        <th>Nivel</th>
+                        <th>Curso</th>
+                        <th>Paralelo</th>
+                        <th>Docente Responsable</th>
+                        <th>Última actualización</th>
+                        <th>Fecha creación</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% if solicitudes_asignadas %}
+                        {% for solicitud in solicitudes_asignadas %}
+                        <tr>
+                            <td data-label="Código">{{ solicitud.1 }}</td>
+                            <td data-label="Solicitante">{{ solicitud.2 }}</td>
+                            <td data-label="Estudiante">{{ solicitud.3 }}</td>
+                            <td data-label="Sección">{{ solicitud.4 }}</td>
+                            <td data-label="Jornada">{{ solicitud.5 }}</td>
+                            <td data-label="Nivel">{{ solicitud.6 }}</td>
+                            <td data-label="Curso">{{ solicitud.7 }}</td>
+                            <td data-label="Paralelo">{{ solicitud.8 }}</td>
+                            <td data-label="Docente Responsable">{{ solicitud.9|default:'Sin docente' }}</td>
+                            <td data-label="Última actualización">{% if solicitud.10 %}{{ solicitud.10|date:'Y-m-d H:i' }}{% else %}Sin fecha{% endif %}</td>
+                            <td data-label="Fecha creación">{% if solicitud.11 %}{{ solicitud.11|date:'Y-m-d' }}{% else %}-{% endif %}</td>
+                            <td data-label="Acción">
+                                <a href="{% url 'solicitud_detalle' solicitud.0 %}" class="btn-ver">
+                                    Modificar
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="12" style="text-align: center; color: #888; font-style: italic; padding: 30px;">
+                                        No hay solicitudes asignadas aún.
+                                    </td>
+                                </tr>
+                    {% endif %}
+                    <tr class="no-results-row" style="display: none;">
+                        <td colspan="9" style="text-align: center; color: #888; font-style: italic; padding: 30px;">
+                            No hay resultados que coincidan con su búsqueda.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+
+    <div id="modalLogout" class="modal-overlay">
+        <div class="modal-card">
+            <span class="modal-icon">🚪</span>
+            <h3>¿Deseas cerrar sesión?</h3>
+            <p>¿Seguro que quieres salir? Tendrás que introducir tus credenciales de nuevo para acceder al panel.</p>
+            <div class="modal-buttons">
+                <button class="btn-modal btn-modal-cancel" onclick="cerrarModales()">Volver</button>
+                <button class="btn-modal btn-modal-action" onclick="ejecutarLogout()">Cerrar Sesión</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("buscadorAsignadas").addEventListener("keyup", function(){
+            let filtro = this.value.toLowerCase();
+            let filas = document.querySelectorAll("#tablaAsignadas tbody tr:not(.no-results-row)");
+            let noResultsRow = document.querySelector("#tablaAsignadas tbody .no-results-row");
+            let visibles = 0;
+
+            filas.forEach(fila => {
+                let texto = fila.innerText.toLowerCase();
+                if (texto.includes(filtro)) {
+                    fila.style.display = "";
+                    visibles += 1;
+                } else {
+                    fila.style.display = "none";
+                }
+            });
+
+            noResultsRow.style.display = visibles === 0 ? "" : "none";
+        });
+
+        function abrirModalLogout() {
+            document.getElementById('modalLogout').classList.add('active');
+        }
+
+        function ejecutarLogout() {
+            window.location.href = "{% url 'logout' %}";
+        }
+
+        function cerrarModales() {
+            document.getElementById('modalLogout').classList.remove('active');
+        }
+
+        window.onclick = function(event) {
+            const modalLogout = document.getElementById('modalLogout');
+            if (event.target === modalLogout) {
+                cerrarModales();
+            }
+        }
+    </script>
+</body>
+</html>

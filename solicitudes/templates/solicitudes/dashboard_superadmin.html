@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Super admin - UE "Vida Nueva"</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/estilos_dashboard_superadmin.css' %}">
+</head>
+<body>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="toast-container" id="toastContainer">
+        {% if messages %}
+            {% for msg in messages %}
+                <div class="toast-card {% if 'error' in msg.tags %}error{% endif %}">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span>{% if 'error' in msg.tags %}❌{% else %}✅{% endif %}</span>
+                        <div class="toast-content">{{ msg }}</div>
+                    </div>
+                    <button class="toast-close" onclick="cerrarToast(this)">×</button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <div class="sidebar" id="sidebarMenu">
+        <h2>Bienvenido</h2>
+        <ul>
+            <li>
+                <a href="/registro_admin">
+                    👥 <span>Registrar Usuario</span>
+                </a>
+            </li>
+            <li>
+                <a href="javascript:void(0);" onclick="abrirModalLogout()">
+                    🚪 <span>Cerrar sesión</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main">
+        <div class="navbar" style="display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+    <div class="logo-title-area" style="display: flex; align-items: center; gap: 15px;">
+        <img src="{% static 'img/logo_tecnica.jpeg' %}" alt="Logo Vida Nueva" class="school-logo" style="width: 45px; height: 45px; border-radius: 8px; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+        <h1 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--gris-texto); line-height: 1.3;">Unidad Educativa Particular Técnica Cristiana "Vida Nueva"</h1>
+    </div>
+    
+    <div class="nav-actions" style="display: flex; align-items: center; gap: 12px;">
+        <button class="menu-button" id="menuToggle">☰</button>
+        <div class="profile">
+            <span>{{ nombre }}</span>
+        </div>
+    </div>
+</div>
+        <div class="cards">
+            <div class="card">
+                <h3>Total Administradores</h3>
+                <h2>{{ total_admins }}</h2>
+            </div>
+            <div class="card">
+                <h3>Docentes</h3>
+                <h2>{{ total_docentes }}</h2>
+            </div>
+            <div class="card">
+                <h3>Secretarios</h3>
+                <h2>{{ total_secretarias }}</h2>
+            </div>
+            <div class="card">
+                <h3>Superadmin</h3>
+                <h2>{{ total_superadmins }}</h2>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <div class="table-header">
+                <h2>Usuarios Registrados</h2>
+                <div class="search-box" style="position: relative; display: flex; align-items: center;">
+                    <input
+                        type="text"
+                        id="inputBusqueda"
+                        placeholder="Buscar por usuario o nombre..."
+                        onkeyup="filtrarUsuarios()"
+                    >
+                    <span
+                        id="clearSearch"
+                        onclick="limpiarBusqueda()"
+                        style="position: absolute; right: 14px; color: #94a3b8; font-weight: bold; font-size: 1.2rem; cursor: pointer; display: none;">
+                        ×
+                    </span>
+                </div>
+            </div>
+
+            <table id="tablaUsuarios">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Rol</th>
+                        <th>Teléfono</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for admin in admins %}
+                    <tr>
+                        <td data-label="ID"><strong>#{{ admin.0 }}</strong></td>
+                        <td data-label="Usuario">{{ admin.1 }}</td>
+                        <td data-label="Nombre">{{ admin.2 }}</td>
+                        <td data-label="Correo">{{ admin.3 }}</td>
+                        <td data-label="Rol">
+                            <span class="badge {{ admin.4 }}">
+                                {{ admin.4 }}
+                            </span>
+                        </td>
+                        <td data-label="Teléfono">{{ admin.5 }}</td>
+                        <td data-label="Acciones" class="acciones">
+                            <a href="/editar_usuario/{{ admin.0 }}" class="btn-editar">✏️ Editar</a>
+                            <a href="javascript:void(0);" class="btn-eliminar" onclick="abrirModalEliminar('{{ admin.0 }}')">🗑 Eliminar</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr class="no-results-row">
+                        <td colspan="7" style="text-align: center; color: #888; font-style: italic; padding: 30px;">
+                            No hay usuarios registrados.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="no-results-row" id="noResults" style="display: none;">
+                        <td colspan="7" style="text-align: center; color: #888; font-style: italic; padding: 30px;">
+                            No hay resultados que coincidan con su búsqueda.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="modalEliminar" class="modal-overlay">
+        <div class="modal-box">
+            <span class="modal-icon">⚠️</span>
+            <h3 id="modalEliminarTitle">¿Eliminar Usuario?</h3>
+            <p id="modalEliminarMessage">Esta acción no se puede deshacer. El usuario perderá inmediatamente el acceso al sistema institucional.</p>
+            <div class="modal-buttons">
+                <button class="btn-modal btn-modal-cancel" onclick="cerrarModales()">Cancelar</button>
+                <button id="btnConfirmarEliminar" class="btn-modal btn-modal-action">Sí, eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalLogout" class="modal-overlay">
+        <div class="modal-box">
+            <span class="modal-icon">🚪</span>
+            <h3>¿Deseas cerrar sesión?</h3>
+            <p>¿Seguro que quieres salir? Tendrás que introducir tus credenciales de nuevo para acceder al panel.</p>
+            <div class="modal-buttons">
+                <button class="btn-modal btn-modal-cancel" onclick="cerrarModales()">Volver</button>
+                <button class="btn-modal btn-modal-action" onclick="ejecutarLogout()">Cerrar Sesión</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let usuarioIdAEliminar = null;
+        const sidebarMenu = document.getElementById('sidebarMenu');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const menuToggle = document.getElementById('menuToggle');
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const toasts = document.querySelectorAll('.toast-card');
+            toasts.forEach((toast, index) => {
+                setTimeout(() => { toast.classList.add('show'); }, index * 200 + 100);
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 400);
+                }, 4500);
+            });
+        });
+
+        function cerrarToast(boton) {
+            const toast = boton.closest('.toast-card');
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 400);
+        }
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function() {
+                sidebarMenu.classList.toggle('active');
+                sidebarOverlay.classList.toggle('active');
+            });
+        }
+
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', cerrarModalesYMenus);
+        }
+
+        let elementoAEliminar = { id: null, tipo: 'usuario' };
+
+        function abrirModalEliminar(id, tipo = 'usuario') {
+            elementoAEliminar.id = id;
+            elementoAEliminar.tipo = tipo;
+
+            const titulo = document.getElementById('modalEliminarTitle');
+            const mensaje = document.getElementById('modalEliminarMessage');
+
+            if (tipo === 'solicitud') {
+                titulo.textContent = '¿Eliminar Solicitud?';
+                mensaje.textContent = 'Esta acción no se puede deshacer. La solicitud será eliminada permanentemente del sistema.';
+            } else {
+                titulo.textContent = '¿Eliminar Usuario?';
+                mensaje.textContent = 'Esta acción no se puede deshacer. El usuario perderá inmediatamente el acceso al sistema institucional.';
+            }
+
+            document.getElementById('modalEliminar').classList.add('active');
+        }
+
+        document.getElementById('btnConfirmarEliminar').addEventListener('click', function() {
+            if (!elementoAEliminar.id) return;
+
+            if (elementoAEliminar.tipo === 'solicitud') {
+                window.location.href = "/eliminar_solicitud/" + elementoAEliminar.id;
+            } else {
+                window.location.href = "/eliminar_usuario/" + elementoAEliminar.id;
+            }
+        });
+
+        function abrirModalLogout() {
+            document.getElementById('modalLogout').classList.add('active');
+        }
+
+        function ejecutarLogout() {
+            window.location.href = "/logout";
+        }
+
+        function filtrarUsuarios() {
+            const filtro = document.getElementById('inputBusqueda').value.toLowerCase();
+            const filas = document.querySelectorAll('#tablaUsuarios tbody tr:not(.no-results-row)');
+            const noResultsRow = document.getElementById('noResults');
+            const clearButton = document.getElementById('clearSearch');
+            let visibles = 0;
+
+            filas.forEach(fila => {
+                const usuario = fila.children[1].textContent.toLowerCase();
+                const nombre = fila.children[2].textContent.toLowerCase();
+                const coincidencia = usuario.includes(filtro) || nombre.includes(filtro);
+                fila.style.display = coincidencia ? '' : 'none';
+                if (coincidencia) visibles += 1;
+            });
+
+            if (clearButton) clearButton.style.display = filtro ? 'block' : 'none';
+            if (noResultsRow) noResultsRow.style.display = (visibles === 0 && filas.length > 0) ? '' : 'none';
+        }
+
+        function limpiarBusqueda() {
+            const input = document.getElementById('inputBusqueda');
+            input.value = '';
+            filtrarUsuarios();
+        }
+
+        function cerrarModales() {
+            document.getElementById('modalEliminar').classList.remove('active');
+            document.getElementById('modalLogout').classList.remove('active');
+            usuarioIdAEliminar = null;
+        }
+
+        function cerrarModalesYMenus() {
+            cerrarModales();
+            sidebarMenu.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        }
+
+        window.onclick = function(event) {
+            const modalEliminar = document.getElementById('modalEliminar');
+            const modalLogout = document.getElementById('modalLogout');
+            if (event.target === modalEliminar || event.target === modalLogout) {
+                cerrarModales();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Detalle de Solicitud</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+{% load static %}
+<script src="{% static 'js/scripts.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/estilos_solicitud_detalle.css' %}">
+</head>
+<body>
+
+{% if messages %}
+    <div class="popup-container">
+        {% for message in messages %}
+            <div class="popup-toast {% if 'error' in message.tags %}popup-error{% else %}popup-success{% endif %}">
+                <p style="margin: 0;">
+                    {% if 'error' in message.tags %}⚠️{% else %}✅{% endif %} {{ message }}
+                </p>
+                <button class="popup-close-btn" onclick="cerrarPopup(this)">&times;</button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="container">
+
+<a href="{% url 'dashboard_secretaria' %}" class="back">
+← Volver al Inicio
+</a>
+
+<div class="card">
+
+<h1>Solicitud {{ solicitud.1 }}</h1>
+
+<div class="section-title">
+Información General
+</div>
+
+<div class="grid">
+
+<div class="info">
+<label>Código</label>
+<span>{{ solicitud.1 }}</span>
+</div>
+
+<div class="info">
+<label>Solicitante</label>
+<span>{{ solicitud.2 }}</span>
+</div>
+
+<div class="info">
+<label>Cédula</label>
+<span>{{ solicitud.3 }}</span>
+</div>
+
+<div class="info">
+<label>Teléfono</label>
+<span>{{ solicitud.4 }}</span>
+</div>
+
+<div class="info">
+<label>Estudiante</label>
+<span>{{ solicitud.5 }}</span>
+</div>
+
+<div class="info">
+<label>Sección</label>
+<span>{{ solicitud.6 }}</span>
+</div>
+
+<div class="info">
+<label>Jornada</label>
+<span>{{ solicitud.7 }}</span>
+</div>
+
+<div class="info">
+<label>Nivel</label>
+<span>{{ solicitud.8 }}</span>
+</div>
+
+<div class="info">
+<label>Grado</label>
+<span>{{ solicitud.13 }}</span>
+</div>
+
+<div class="info">
+<label>Paralelo</label>
+<span>{{ solicitud.14 }}</span>
+</div>
+
+</div>
+
+<div class="info">
+    <label>Fecha y Hora de Registro</label>
+    <span>{{ solicitud.11 }}</span>
+</div>
+
+<br>
+
+<div class="info">
+<label>Descripción de la Solicitud</label>
+<span>{{ solicitud.9 }}</span>
+</div>
+
+<br>
+<div class="info">
+<label>Documento Adjunto (Anexo)</label>
+{% if solicitud.10 %}
+    <p style="margin-top: 5px;">
+        <a href="{% static 'uploads/' %}{{ solicitud.10 }}" target="_blank" style="color: #ffc067; font-weight: 600; text-decoration: underline;">
+            📄 Ver archivo adjunto original
+        </a>
+    </p>
+{% else %}
+    <span style="color: #888; font-style: italic;">No se adjuntaron documentos a esta solicitud.</span>
+{% endif %}
+</div>
+
+</div>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="card">
+        <div class="section-title">
+            Gestión de Secretaría
+        </div>
+
+        <div class="form-group">
+            <label>Asignar Docente Responsable</label>
+            <select name="id_responsable" required {% if solicitud.12 == 'resuelto' %}disabled{% endif %}>
+                <option value="">Seleccione un docente</option>
+                {% for docente in docentes %}
+                    <option value="{{ docente.0 }}" {% if solicitud.17 == docente.0 %}selected{% endif %}>
+                        Lic. {{ docente.1 }} {{ docente.2 }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Respuesta</label>
+            <textarea name="respuesta" {% if solicitud.12 == 'resuelto' %}disabled{% endif %}>{{ solicitud.18|default:"" }}</textarea>
+        </div>
+
+        <div class="buttons">
+            {% if solicitud.12 != 'resuelto' %}
+                <button type="submit" class="btn">Guardar cambios</button>
+            {% else %}
+                <div class="alert-info" style="background: #e0f2fe; color: #0369a1; padding: 15px; border-radius: 10px; text-align: center; font-weight: 600; width: 100%;">
+                    ⚠️ Esta solicitud ya ha sido <strong>resuelta</strong> y los campos están bloqueados.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</form>
+
+<div class="card-danger" {% if solicitud.12 == 'resuelto' %}style="opacity: 0.6; pointer-events: none;"{% endif %}>
+    <div class="section-title-danger">
+        Zona de Peligro / Descartar Solicitud
+    </div>
+    
+    <p class="danger-text">
+        {% if solicitud.12 != 'resuelto' %}
+            Si esta solicitud es spam, está duplicada o no tiene sentido, puedes eliminarla del sistema permanentemente. Esta acción no se puede deshacer.
+        {% else %}
+            Esta solicitud ya ha sido resuelta, por lo que no puede ser eliminada del historial del sistema.
+        {% endif %}
+    </p>
+    
+    <form id="form-eliminar" method="POST" action="{% url 'eliminar_solicitud' solicitud.0 %}">
+        {% csrf_token %}
+        <button type="button" class="btn-danger" {% if solicitud.12 == 'resuelto' %}disabled style="background: #cbd5e1; color: #64748b; box-shadow: none; cursor: not-allowed;"{% endif %} onclick="abrirModalConfirmacion()">
+            {% if solicitud.12 != 'resuelto' %}
+                🗑️ Eliminar Solicitud Definitivamente
+            {% else %}
+                🔒 Eliminación Bloqueada
+            {% endif %}
+        </button>
+    </form>
+</div> 
+</div>
+ <div id="modal-confirmacion" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-icon">⚠️</div>
+        <h3>¿Estás completamente seguro?</h3>
+        <p>Esta acción es irreversible. Se borrarán todos los registros de esta solicitud permanentemente del sistema.</p>
+        <div class="modal-buttons">
+            <button type="button" class="btn-modal btn-modal-cancel" onclick="cerrarModalConfirmacion()">
+                No, cancelar
+            </button>
+            <button type="button" class="btn-modal btn-modal-action" onclick="confirmarEliminacion()">
+                Sí, eliminar definitivamente
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+function abrirModalConfirmacion() {
+    document.getElementById('modal-confirmacion').classList.add('active');
+}
+
+function cerrarModalConfirmacion() {
+    document.getElementById('modal-confirmacion').classList.remove('active');
+}
+
+function confirmarEliminacion() {
+    document.getElementById('form-eliminar').submit();
+}
+function cerrarPopup(boton) {
+    const popup = boton.parentElement;
+    popup.classList.add('popup-fade-out');
+    setTimeout(() => {
+        popup.remove();
+    }, 300);
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    const popups = document.querySelectorAll('.popup-toast');
+    popups.forEach(popup => {
+        setTimeout(() => {
+            if (popup) {
+                popup.classList.add('popup-fade-out');
+                setTimeout(() => popup.remove(), 300);
+            }
+        }, 5000);
+    });
+});
+const modal = document.getElementById('modal-confirmacion');
+const formulario = document.getElementById('form-eliminar');
+
+modal.addEventListener('click', function(e) {
+    if (e.target === modal) {
+        cerrarModalConfirmacion();
+    }
+});
+</script>
+</body>
+
+</html>

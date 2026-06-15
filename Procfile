@@ -1,0 +1,1 @@
+web: gunicorn solicitudes_vn.wsgi

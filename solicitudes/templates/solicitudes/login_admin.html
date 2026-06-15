@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Vida Nueva</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/estilos_login.css' %}">
+</head>
+<body>
+{% load i18n %}
+<div class="login-card">
+    <div class="login-avatar">
+        <i class="fas fa-user-shield"></i>
+    </div>
+    <div class="login-titulo">Panel Administrativo</div>
+    <div class="login-subtitulo">Unidad Educativa Particular Tecnica Cristiana "Vida Nueva"</div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="login-error">
+                <i class="fas fa-exclamation-circle"></i>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div class="login-field">
+            <i class="fas fa-user"></i>
+            <input type="text" name="usuario" placeholder="Usuario" autofocus autocomplete="username" required>
+        </div>
+        <div class="login-field">
+            <i class="fas fa-lock"></i>
+            <input type="password" name="contraseña" placeholder="Contraseña" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="login-btn">
+            <i class="fas fa-sign-in-alt"></i> Ingresar
+        </button>
+    </form>
+
+    <a href="/" class="login-btn-secundario">
+        <i class="fas fa-home"></i> Ir al inicio
+    </a>
+
+    <div class="login-footer">© 2026 Vida Nueva · Solo personal autorizado</div>
+</div>
+</body>
+</html>

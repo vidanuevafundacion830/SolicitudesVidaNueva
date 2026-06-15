@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Solicitudes Escolar - UE "Vida Nueva"</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="{% static 'js/scripts.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/estilos_index.css' %}">
+</head>
+<body>
+
+<div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<header class="main-header">
+    <div class="header-container">
+        <div class="logo-title-area">
+            <img src="{% static 'img/logo_tecnica.jpeg' %}" alt="Logo Vida Nueva" class="school-logo">
+            <h1>Unidad Educativa Particular Técnica Cristiana "Vida Nueva"</h1>
+        </div>
+        <a href="/login/" class="btn-login-header">Iniciar Sesión</a>
+    </div>
+</header>
+
+<div class="container">
+    <h2 class="form-title">Formulario de Solicitud Escolar</h2>
+    <p class="subtitle">Complete los campos. Su progreso se visualiza en la parte superior.</p>
+
+    <form action="{% url 'guardar' %}" method="POST" id="requestForm" onsubmit="mostrarAlerta(event)" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-section-title"><span>01</span> Datos del Solicitante</div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Nombre del solicitante:</label>
+                <input type="text" name="nombre_solicitante" oninput="soloLetras(this); updateProgress()" placeholder="Nombres completos" required>
+            </div>
+            <div class="form-group">
+                <label>Cédula del solicitante:</label>
+                <input type="text" name="cedula_solicitante" oninput="soloNumeros(this); updateProgress()" placeholder="Ej: 1712345678" required>
+            </div>
+            <div class="form-group full-width-mobile">
+                <label>Teléfono del solicitante:</label>
+                <input type="text" name="telefono_solicitante" oninput="soloNumeros(this); updateProgress()" placeholder="Ej: 09..." required>
+            </div>
+        </div>
+
+        <div class="form-section-title"><span>02</span> Datos del Estudiante</div>
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label>Nombre del estudiante:</label>
+                <input type="text" name="nombre_estudiante" oninput="soloLetras(this); updateProgress()" required>
+            </div>
+            <div class="form-group">
+                <label>Sección:</label>
+                <select name="seccion" onchange="updateProgress()" required>
+                    <option value="">Seleccione</option>
+                    <option>Guamaní</option>
+                    <option>Cojimíes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Jornada:</label>
+                <select name="jornada" onchange="updateProgress()" required>
+                    <option value="">Seleccione</option>
+                    <option>Matutina</option>
+                    <option>Semipresencial</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Nivel:</label>
+                <select name="nivel" onchange="updateProgress()" required>
+                    <option value="">Seleccione</option>
+                    <option>Maternal</option>
+                    <option>Inicial</option>
+                    <option>EGB</option>
+                    <option>Bachillerato Técnico</option>
+                    <option>Básico Intensivo</option>
+                    <option>Bachillerato Intensivo</option>
+                    <option>Bachillerato Técnico Intensivo</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Grado:</label>
+                <select name="grado" id="grado" required onchange="validarTecnica(); updateProgress()">
+                    <option value="">Seleccione</option>
+                    <option>Maternal</option>
+                    <option>Inicial</option>
+                    <option>1ro</option>
+                    <option>2do</option>
+                    <option>3ro</option>
+                    <option>4to</option>
+                    <option>5to</option>
+                    <option>6to</option>
+                    <option>7mo</option>
+                    <option>8vo</option>
+                    <option>9no</option>
+                    <option>10mo</option>
+                    <option>1ero Bach</option>
+                    <option>2do Bach</option>
+                    <option>3ro Bach</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Paralelo:</label>
+                <select name="paralelo" onchange="updateProgress()" required>
+                    <option value="">Seleccione</option>
+                    <option>A</option>
+                    <option>B</option>
+                    <option>C</option>
+                    <option>D</option>
+                    <option>E</option>
+                    <option>F</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Técnica:</label>
+                <select name="tecnica" id="tecnica" onchange="updateProgress()" disabled>
+                    <option value="">Seleccione</option>
+                    <option>Informática</option>
+                    <option>Gestión</option>
+                    <option>Mecánica</option>
+                    <option>Mecatrónica</option>
+                </select>
+            </div>
+            <div class="form-group full-width-mobile">
+                <label>Paralelo técnico:</label>
+                <select name="paralelo_tecnico" id="paralelo_tecnico" onchange="updateProgress()" disabled>
+                    <option value="">Seleccione</option>
+                    <option>A</option>
+                    <option>B</option>
+                    <option>C</option>
+                    <option>D</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group full-width" style="margin-top: 25px;">
+            <label>Descripción:</label>
+            <textarea name="descripcion" rows="4" oninput="updateProgress()" placeholder="Detalle el motivo de su solicitud..." required></textarea>
+        </div>
+
+        <div class="form-section-title"><span>03</span> Anexos</div>
+        <div class="form-group full-width">
+            <label>Porfavor adjuntar el comprobante de pago de 1 dolar correspondiente a su solicitud</label>
+            <input 
+                type="file" 
+                name="anexo" 
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" 
+                required
+                oninput="updateProgress()"
+                style="padding: 10px; border: 2px solid #edf2f7; border-radius: 12px; cursor: pointer;">
+            <p style="font-size: 0.85rem; color: #666; margin-top: 8px;">Formatos aceptados: PDF, DOC, DOCX, JPG, JPEG, PNG</p>
+        </div>
+
+        <label>Correo Electrónico</label>
+
+        <input
+        type="email"
+        name="correo_solicitante"
+        required
+        placeholder="Ingrese su correo electrónico para recibir actualizaciones sobre su solicitud...">
+
+        <button type="submit" class="btn-submit">
+            <span>Enviar Solicitud</span>
+        </button>
+    </form>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="{% if 'error' in message.tags %}popup-error{% else %}popup-success{% endif %}" id="popup">
+            <p>{{ message }}</p>
+        </div>
+    {% endfor %}
+{% endif %}
+
+</body>
+</html>

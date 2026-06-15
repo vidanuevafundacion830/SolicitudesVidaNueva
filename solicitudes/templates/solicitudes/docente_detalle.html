@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Solicitud - Panel Docente</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/estilos_docente_detalle.css' %}">
+</head>
+<body>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="{% if 'error' in message.tags %}popup-error{% else %}popup-success{% endif %}" id="popup">
+            <p>{{ message }}</p>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="container">
+    
+    <div class="topbar">
+        <div class="title">
+            <h1>Solicitud {{ solicitud.1 }}</h1>
+            <p>Administración de la solicitud asignada para el docente responsable.</p>
+        </div>
+        <div class="session">
+            <span>Docente activo</span>
+        </div>
+    </div>
+
+    <a href="{% url 'dashboard_docente' %}" class="back-link">← Volver al Panel</a>
+
+    <div class="card">
+        <div class="section-title">Información completa de la solicitud</div>
+        
+        <div class="grid-3">
+            <div class="field">
+                <label>Código</label>
+                <span class="value">{{ solicitud.1 }}</span>
+            </div>
+            <div class="field">
+                <label>Estado actual</label>
+                <span class="badge {{ estado_css }}">{{ solicitud.12 }}</span>
+            </div>
+            <div class="field">
+                <label>Fecha de creación</label>
+                <span class="value">{{ solicitud.11 }}</span>
+            </div>
+            <div class="field">
+                <label>Solicitante</label>
+                <span class="value">{{ solicitud.2 }}</span>
+            </div>
+            <div class="field">
+                <label>Cédula</label>
+                <span class="value">{{ solicitud.3 }}</span>
+            </div>
+            <div class="field">
+                <label>Teléfono</label>
+                <span class="value">{{ solicitud.4 }}</span>
+            </div>
+            <div class="field">
+                <label>Estudiante</label>
+                <span class="value">{{ solicitud.5 }}</span>
+            </div>
+            <div class="field">
+                <label>Sección</label>
+                <span class="value">{{ solicitud.6 }}</span>
+            </div>
+            <div class="field">
+                <label>Jornada</label>
+                <span class="value">{{ solicitud.7 }}</span>
+            </div>
+            <div class="field">
+                <label>Nivel</label>
+                <span class="value">{{ solicitud.8 }}</span>
+            </div>
+            <div class="field">
+                <label>Grado</label>
+                <span class="value">{{ solicitud.13 }}</span>
+            </div>
+            <div class="field">
+                <label>Paralelo</label>
+                <span class="value">{{ solicitud.14 }}</span>
+            </div>
+            <div class="field full-width">
+                <label>Técnica / Paralelo técnico</label>
+                <span class="value">{{ solicitud.15|default:"No aplica" }} / {{ solicitud.16|default:"No aplica" }}</span>
+            </div>
+            <div class="field full-width">
+                <label>Descripción</label>
+                <span class="value">{{ solicitud.9 }}</span>
+            </div>
+        </div>
+
+        <div class="field full-width" style="margin-top: 25px;">
+            <label>Anexos</label>
+            {% if solicitud.10 %}
+                <a class="btn-link" href="{% static 'uploads/' %}{{ solicitud.10 }}" target="_blank">
+                    Descargar / Ver anexo y documentos adjuntos
+                </a>
+            {% else %}
+                <span class="no-file-text">No hay archivos anexados.</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <form method="POST" id="formGestionDocente" class="card">
+        {% csrf_token %}
+        <div class="section-title">Gestión del docente</div>
+
+        <div class="grid-2">
+            <div class="field transparent">
+                <label>Respuesta Institucional</label>
+                <textarea class="textarea" name="respuesta" placeholder="Escribe tu respuesta institucional...">{{ solicitud.18|default:"" }}</textarea>
+            </div>
+
+            <div class="field transparent">
+                <label>Cambiar estado operativo</label>
+                <select class="select" name="estado">
+                    <option value="en_proceso" {% if solicitud.12 == 'en_proceso' %}selected{% endif %}>En Proceso</option>
+                    <option value="resuelto" {% if solicitud.12 == 'resuelto' %}selected{% endif %}>Resuelto</option>
+                    <option value="rechazado" {% if solicitud.12 == 'rechazado' %}selected{% endif %}>Rechazado</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button type="submit" class="btn-primary">Guardar cambios</button>
+        </div>
+    </form>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const popup = document.getElementById('popup');
+    if (popup) {
+        setTimeout(() => {
+            popup.style.opacity = '0';
+            popup.style.transform = 'translateX(50px)';
+            setTimeout(() => popup.remove(), 500);
+        }, 4000); 
+    }
+});
+</script>
+</body>
+</html>
